@@ -57,3 +57,27 @@ thread2.start()
 # которое ис­пользует в работе другой поток
 
 # Кондиция представляется классом Condition, Condition([lock=None])
+
+def task1():
+    global val, cond
+    cond.acquire()
+    while not val:
+        cond.wait()
+    print(val)
+    val = None
+    cond.release()
+
+def task2():
+    global val, cond
+    time.sleep(3)
+    cond.acquire()
+    val = "Подъем!!!"
+    cond.notify()
+    cond.release()
+
+val = None
+cond = threading.Condition()
+thread1 = threading.Thread(target=task1)
+thread1.start()
+thread2 = threading.Thread(target=task2)
+thread2.start()
